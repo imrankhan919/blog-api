@@ -45,7 +45,7 @@ const addBlog = async (req, res) => {
 
     // Save Document In DB
     const newBlog = await Blog.create({
-        title, description, author
+        title, description, author, user: req.user._id
     })
 
     if (!newBlog) {
@@ -62,25 +62,50 @@ const addBlog = async (req, res) => {
 
 const updateBlog = async (req, res) => {
 
-    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body)
+    let user = req.user
+    let blog = await Blog.findById(req.params.id)
 
-    if (!updatedBlog) {
-        res.status(400)
-        throw new Error('Blog Not Updated')
+
+
+
+    if (user._id.toString() === blog.user.toString()) {
+        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body)
+        if (!updatedBlog) {
+            res.status(400)
+            throw new Error('Blog Not Updated')
+        }
+
+        res.status(200).json(updatedBlog)
+
+    } else {
+        res.status(401).json({
+            msg: "You are not allowed to edit this blog"
+        })
     }
 
-    res.status(200).json(updatedBlog)
+
 
 }
 
 const deleteBlog = async (req, res) => {
 
-    await Blog.findByIdAndDelete(req.params.id)
+    let user = req.user
+    let blog = await Blog.findById(req.params.id)
 
-    res.status(200).json({
-        _id: req.params.id,
-        msg: "Blog Deleted!"
-    })
+
+
+
+    if (user._id.toString() === blog.user.toString()) {
+        await Blog.findByIdAndDelete(req.params.id)
+        res.status(200).json({
+            _id: req.params.id,
+            msg: "Blog Deleted!"
+        })
+    } else {
+        res.status(401).json({
+            msg: "You are not authorized to delete this blog"
+        })
+    }
 
 
 }

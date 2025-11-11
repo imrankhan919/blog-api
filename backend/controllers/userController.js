@@ -85,5 +85,14 @@ const generateToken = (id) => {
 }
 
 
+const privateController = (req, res) => {
 
-module.exports = { registerUser, loginUser }
+    res.json({
+        message: `Request Made By ${req.user.name}`
+    })
+
+}
+
+
+
+module.exports = { registerUser, loginUser, privateController }

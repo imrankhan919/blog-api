@@ -16,6 +16,11 @@ const blogSchema = new mongoose.Schema({
     isPublished: {
         type: Boolean,
         default: false
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, {
     timestamps: true
